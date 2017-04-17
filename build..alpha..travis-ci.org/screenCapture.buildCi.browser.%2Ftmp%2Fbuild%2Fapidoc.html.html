@@ -1,0 +1,293 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/zeke/github-url-to-object#readme">github-url-to-object (v3.1.0)</a>
+</h1>
+<h4>Extract user, repo, and other interesting properties from GitHub URLs</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.github-url-to-object">module github-url-to-object</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.github-url-to-object.github-url-to-object">
+            function <span class="apidocSignatureSpan"></span>github-url-to-object
+            <span class="apidocSignatureSpan">(repoUrl, opts)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.github-url-to-object.toString">
+            function <span class="apidocSignatureSpan">github-url-to-object.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">github-url-to-object.</span>url_browser</span>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.github-url-to-object.toString">module github-url-to-object.toString</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.github-url-to-object.toString.toString">
+            function <span class="apidocSignatureSpan">github-url-to-object.</span>toString
+            <span class="apidocSignatureSpan">()</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.github-url-to-object.url_browser">module github-url-to-object.url_browser</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.github-url-to-object.url_browser.parse">
+            function <span class="apidocSignatureSpan">github-url-to-object.url_browser.</span>parse
+            <span class="apidocSignatureSpan">(string)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.github-url-to-object" id="apidoc.module.github-url-to-object">module github-url-to-object</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.github-url-to-object.github-url-to-object" id="apidoc.element.github-url-to-object.github-url-to-object">
+        function <span class="apidocSignatureSpan"></span>github-url-to-object
+        <span class="apidocSignatureSpan">(repoUrl, opts)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">github-url-to-object = function (repoUrl, opts) {
+  var obj = {}
+  opts = opts || {}
+
+  if (!repoUrl) { return null }
+
+  // Allow an object with nested `url` string
+  // (common practice in package.json files)
+  if (repoUrl.url) { repoUrl = repoUrl.url }
+
+  var shorthand = repoUrl.match(/^([\w-_]+)\/([\w-_\.]+)#?([\w-_\.]+)?$/)
+  var mediumhand = repoUrl.match(/^github:([\w-_]+)\/([\w-_\.]+)#?([\w-_\.]+)?$/)
+  var antiquated = repoUrl.match(/^git@[\w-_\.]+:([\w-_]+)\/([\w-_\.]+)$/)
+
+  if (shorthand) {
+    obj.user = shorthand[1]
+    obj.repo = shorthand[2]
+    obj.branch = shorthand[3] || 'master'
+    obj.host = 'github.com'
+  } else if (mediumhand) {
+    obj.user = mediumhand[1]
+    obj.repo = mediumhand[2]
+    obj.branch = mediumhand[3] || 'master'
+    obj.host = 'github.com'
+  } else if (antiquated) {
+    obj.user = antiquated[1]
+    obj.repo = antiquated[2].replace(/\.git$/i, '')
+    obj.branch = 'master'
+    obj.host = 'github.com'
+  } else {
+    // Turn git+http URLs into http URLs
+    repoUrl = repoUrl.replace(/^git\+/, '')
+
+    if (!isUrl(repoUrl)) { return null }
+    var parsedURL = url.parse(repoUrl)
+
+    if (!parsedURL.hostname) { return null }
+    if (parsedURL.hostname !== 'github.com' &amp;&amp; parsedURL.hostname !== 'www.github.com' &amp;&amp; !opts.enterprise) { return null }
+
+    var parts = parsedURL.pathname.match(/^\/([\w-_]+)\/([\w-_\.]+)(\/tree\/[\w-_\.\/]+)?(\/blob\/[\w-_\.\/]+)?/)
+    // ([\w-_\.]+)
+    if (!parts) { return null }
+    obj.user = parts[1]
+    obj.repo = parts[2].replace(/\.git$/i, '')
+
+    obj.host = parsedURL.hostname || 'github.com'
+
+    if (parts[3] &amp;&amp; /^\/tree\/master\//.test(parts[3])) {
+      obj.branch = 'master'
+      obj.path = parts[3].replace(/\/$/, '')
+    } else if (parts[3]) {
+      obj.branch = parts[3].replace(/^\/tree\//, '').match(/[\w-_.]+\/{0,1}[\w-_]+/)[0]
+    } else if (parts[4]) {
+      obj.branch = parts[4].replace(/^\/blob\//, '').match(/[\w-_.]+\/{0,1}[\w-_]+/)[0]
+    } else {
+      obj.branch = 'master'
+    }
+  }
+
+  if (obj.host === 'github.com') {
+    obj.apiHost = 'api.github.com'
+  } else {
+    obj.apiHost = (obj.host) + "/api/v3"
+  }
+
+  obj.tarball_url = "https://" + (obj.apiHost) + "/repos/" + (obj.user) + "/" + (obj.repo) + "/tarball/" + (obj.branch)
+  obj.clone_url = "https://" + (obj.host) + "/" + (obj.user) + "/" + (obj.repo)
+
+  if (obj.branch === 'master') {
+    obj.https_url = "https://" + (obj.host) + "/" + (obj.user) + "/" + (obj.repo)
+    obj.travis_url = "https://travis-ci.org/" + (obj.user) + "/" + (obj.repo)
+    obj.zip_url = "https://" + (obj.host) + "/" + (obj.user) + "/" + (obj.repo) + "/archive/master.zip"
+  } else {
+    obj.https_url = "https://" + (obj.host) + "/" + (obj.user) + "/" + (obj.repo) + "/blob/" + (obj.branch)
+    obj.travis_url = "https://travis-ci.org/" + (obj.user) + "/" + (obj.repo) + "?branch=" + (obj.branch)
+    obj.zip_url = "https://" + (obj.host) + "/" + (obj.user) + "/" + (obj.repo) + "/archive/" + (obj.branch) + ".zip"
+  }
+
+  // Support deep paths (like lerna-style repos)
+  if (obj.path) {
+    obj.https_url += obj.path
+  }
+
+  obj.api_url = "https://" + (obj.apiHost) + "/repos/" + (obj.user) + "/" + (obj.repo)
+
+  return obj
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.github-url-to-object.toString" id="apidoc.element.github-url-to-object.toString">
+        function <span class="apidocSignatureSpan">github-url-to-object.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">toString = function () {
+    return text;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.github-url-to-object.toString" id="apidoc.module.github-url-to-object.toString">module github-url-to-object.toString</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.github-url-to-object.toString.toString" id="apidoc.element.github-url-to-object.toString.toString">
+        function <span class="apidocSignatureSpan">github-url-to-object.</span>toString
+        <span class="apidocSignatureSpan">()</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function toString() { [native code] }</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.github-url-to-object.url_browser" id="apidoc.module.github-url-to-object.url_browser">module github-url-to-object.url_browser</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.github-url-to-object.url_browser.parse" id="apidoc.element.github-url-to-object.url_browser.parse">
+        function <span class="apidocSignatureSpan">github-url-to-object.url_browser.</span>parse
+        <span class="apidocSignatureSpan">(string)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">parse = function (string) {
+  return new window.URL(string)
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+obj.branch = 'master'
+obj.host = 'github.com'
+  } else {
+// Turn git+http URLs into http URLs
+repoUrl = repoUrl.replace(/^git\+/, '')
+
+if (!isUrl(repoUrl)) return null
+var parsedURL = url.<span class="apidocCodeKeywordSpan">parse</span>(repoUrl)
+
+if (!parsedURL.hostname) return null
+if (parsedURL.hostname !== 'github.com' &amp;&amp; parsedURL.hostname !== 'www.github.com' &amp;&amp; !opts
+.enterprise) return null
+
+var parts = parsedURL.pathname.match(/^\/([\w-_]+)\/([\w-_\.]+)(\/tree\/[\w-_\.\/]+)?(\/blob\/[\w-_\.\/]+)?/)
+// ([\w-_\.]+)
+if (!parts) return null
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
