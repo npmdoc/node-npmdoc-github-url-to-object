@@ -1,4 +1,7 @@
-# api documentation for  [github-url-to-object (v3.1.0)](https://github.com/zeke/github-url-to-object#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-github-url-to-object.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-github-url-to-object) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-github-url-to-object.svg)](https://travis-ci.org/npmdoc/node-npmdoc-github-url-to-object)
+# npmdoc-github-url-to-object
+
+#### api documentation for  [github-url-to-object (v3.1.0)](https://github.com/zeke/github-url-to-object#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-github-url-to-object.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-github-url-to-object) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-github-url-to-object.svg)](https://travis-ci.org/npmdoc/node-npmdoc-github-url-to-object)
+
 #### Extract user, repo, and other interesting properties from GitHub URLs
 
 [![NPM](https://nodei.co/npm/github-url-to-object.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/github-url-to-object)
@@ -74,7 +77,8 @@
         ]
     },
     "version": "3.1.0",
-    "website": "https://zeke.github.io/github-url-to-object"
+    "website": "https://zeke.github.io/github-url-to-object",
+    "bin": {}
 }
 ```
 
